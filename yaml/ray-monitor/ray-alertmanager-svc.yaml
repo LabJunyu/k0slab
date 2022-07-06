@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-svc
+  namespace: lens-metrics
+  labels:
+     app: alertmanager
+spec:
+  type: NodePort
+  ports:
+  - port: 9093
+    name: alertmanager
+    protocol: TCP
+    targetPort: 9093
+    nodePort: 30027
+  selector:
+    app: alertmanager

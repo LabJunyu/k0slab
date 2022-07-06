@@ -1,0 +1,86 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: alertmanager-config
+  namespace: lens-metrics
+data:
+  config.yml: |-
+    global:
+      resolve_timeout: 5m
+    route:
+      receiver: raytest
+      group_by: ['pod_name']
+      group_wait: 10s
+      group_interval: 2m
+      repeat_interval: 24h
+      routes:
+      - receiver: raytest
+        match:
+          severity: raytest
+      - receiver: pvc
+        match:
+          rule: pvc
+
+
+  
+
+
+
+    receivers:
+    - name: raytest
+      slack_configs:
+      - api_url: 'https://hooks.slack.com/services/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'
+        channel: '#維運k8s_alert_test'
+        send_resolved: true
+        title: "{{ range .Alerts }}\n{{ end }}"
+        text: "{{ range .Alerts }}\n{{ .Annotations.description }}\n{{ end }}"
+
+    # - name: 'raytest'
+    #   slack_configs:
+    #   - api_url: 'https://hooks.slack.com/services/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'
+    #     channel: '#維運k8s_alert_test'
+    #     send_resolved: true
+    #     title: |-
+    #       [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}]
+    #     text: >-
+    #       {{ range .Alerts }}
+
+    #       *ENV: {{ .Annotations.env }}*
+
+    #       *Alert Name:* {{ .Annotations.alertname }}
+
+    #       *Description:* {{ .Annotations.description }}
+
+    #       *Pod Name:* {{ .Labels.pod }}
+
+    #       *Namespace:* {{ .Labels.namespace }}
+
+    #       *Value:* {{ .Annotations.value }}
+
+    #       ------ :crazydog: 告警分隔線 :ooooo: ------
+    #       {{ end }}
+    
+    - name: 'pvc'
+      slack_configs:
+      - api_url: 'https://hooks.slack.com/services/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'
+        channel: '#維運k8s_alert_test'
+        send_resolved: true
+        title: |-
+          [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}]
+        text: >-
+          {{ range .Alerts }}
+
+          *ENV: {{ .Annotations.env }}*
+
+          *Alert Name:* {{ .Annotations.alertname }}
+
+          *Description:* {{ .Annotations.description }}
+
+          *PVC Name:* {{ .Labels.persistentvolumeclaim }}
+
+          *Namespace:* {{ .Labels.namespace }}
+
+          *Value:* {{ .Annotations.value }}
+
+          ------ :crazydog: 告警分隔線 :ooooo: ------
+          {{ end }}
