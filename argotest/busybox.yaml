@@ -10,5 +10,5 @@ spec:
   - image: busybox:1.28
     command:
       - sleep
-      - "36000"
+      - "48000"
     name: busybox
